@@ -12,18 +12,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Teacher', 'Super Admin']);
+requireRole(teacherPortalRoles());
 
 $pageTitle = __('mark_attendance');
 
 // Get current user and teacher record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $teacher = null;
 $teacherId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     // Super Admin can mark attendance for any class
     $teacherId = null;
 } else {
@@ -43,7 +43,7 @@ $dayOfWeek = date('l', strtotime($selectedDate)); // Get day name (Monday, Tuesd
 
 // Get classes assigned to teacher - STRICT FILTERING: WHERE teacher_id = logged_in_teacher_id
 // AND filtered by timetable to only show classes/subjects teacher teaches on selected day
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $sql = "SELECT DISTINCT c.*, 
             (SELECT COUNT(*) FROM students s WHERE s.current_class_id = c.id AND s.status = 'Active') as student_count
             FROM classes c

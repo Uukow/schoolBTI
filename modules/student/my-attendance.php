@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Student', 'Super Admin'], APP_URL . 'modules/student/dashboard.php');
+requireRole(studentPortalRoles(), APP_URL . 'modules/student/dashboard.php');
 
 $pageTitle = 'My Attendance';
 
 // Get current user and student record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $student = null;
 $studentId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $studentId = null;
 } else {
     $student = getStudentByUserId($currentUser['id']);
@@ -41,7 +41,7 @@ $dateFrom = $_GET['date_from'] ?? date('Y-m-01'); // First day of current month
 $dateTo = $_GET['date_to'] ?? date('Y-m-t'); // Last day of current month
 
 // Get attendance records with subject information
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $attendanceRecords = [];
     $attendanceStats = [
         'total_days' => 0,
@@ -180,7 +180,7 @@ include '../../includes/sidebar.php';
                 </div>
             </div>
 
-            <?php if (!$isSuperAdmin): ?>
+            <?php if (!$isPortalViewer): ?>
             <!-- Overall Statistics Cards -->
             <div class="row">
                 <div class="col-12">

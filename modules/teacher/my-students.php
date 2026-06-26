@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Teacher', 'Super Admin']);
+requireRole(teacherPortalRoles());
 
 $pageTitle = __('my_students');
 
 // Get current user and teacher record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $teacher = null;
 $teacherId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     // Super Admin sees all students
     $teacherId = null;
 } else {
@@ -47,7 +47,7 @@ $classFilter = $_GET['class_id'] ?? '';
 $subjectFilter = $_GET['subject_id'] ?? '';
 
 // Build query
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     // Super Admin sees all students
     $sql = "SELECT DISTINCT s.*, c.class_name, sec.section_name
             FROM students s

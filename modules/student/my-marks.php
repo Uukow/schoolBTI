@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Student', 'Super Admin'], APP_URL . 'modules/student/dashboard.php');
+requireRole(studentPortalRoles(), APP_URL . 'modules/student/dashboard.php');
 
 $pageTitle = 'My Marks & Results';
 
 // Get current user and student record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $student = null;
 $studentId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $studentId = null;
 } else {
     $student = getStudentByUserId($currentUser['id']);
@@ -41,7 +41,7 @@ $examFilter = $_GET['exam_id'] ?? '';
 $subjectFilter = $_GET['subject_id'] ?? '';
 
 // Get marks
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $marks = [];
 } else {
     $sql = "SELECT sm.*, es.exam_date, es.total_marks, s.subject_name, s.subject_code,
@@ -79,7 +79,7 @@ $examsSql = "SELECT DISTINCT e.* FROM exams e
             INNER JOIN student_marks sm ON es.id = sm.exam_schedule_id
             WHERE sm.student_id = ? AND e.session_id = ?
             ORDER BY e.start_date DESC";
-$exams = $isSuperAdmin ? [] : fetchAll(executeQuery($examsSql, 'ii', [$studentId, $currentSession['id']]));
+$exams = $isPortalViewer ? [] : fetchAll(executeQuery($examsSql, 'ii', [$studentId, $currentSession['id']]));
 
 // Get subjects for filter
 $subjectsSql = "SELECT DISTINCT s.* FROM subjects s
@@ -87,7 +87,7 @@ $subjectsSql = "SELECT DISTINCT s.* FROM subjects s
                 INNER JOIN student_marks sm ON es.id = sm.exam_schedule_id
                 WHERE sm.student_id = ?
                 ORDER BY s.subject_name";
-$subjects = $isSuperAdmin ? [] : fetchAll(executeQuery($subjectsSql, 'i', [$studentId]));
+$subjects = $isPortalViewer ? [] : fetchAll(executeQuery($subjectsSql, 'i', [$studentId]));
 
 // Calculate overall statistics
 $overallStats = [
@@ -98,7 +98,7 @@ $overallStats = [
     'average_grade' => 'N/A'
 ];
 
-if (!$isSuperAdmin && !empty($marks)) {
+if (!$isPortalViewer && !empty($marks)) {
     $overallStats['total_exams'] = count($marks);
     foreach ($marks as $mark) {
         $overallStats['total_marks_obtained'] += $mark['marks_obtained'];
@@ -127,7 +127,7 @@ include '../../includes/sidebar.php';
                 </div>
             </div>
 
-            <?php if (!$isSuperAdmin): ?>
+            <?php if (!$isPortalViewer): ?>
             <!-- Overall Statistics -->
             <div class="row">
                 <div class="col-xl-3 col-md-6">

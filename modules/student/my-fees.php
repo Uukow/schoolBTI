@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Student', 'Super Admin'], APP_URL . 'modules/student/dashboard.php');
+requireRole(studentPortalRoles(), APP_URL . 'modules/student/dashboard.php');
 
 $pageTitle = 'My Fees & Payments';
 
 // Get current user and student record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $student = null;
 $studentId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $studentId = null;
 } else {
     $student = getStudentByUserId($currentUser['id']);
@@ -50,7 +50,7 @@ $stats = [
     'overdue_count' => 0
 ];
 
-if (!$isSuperAdmin && $studentId) {
+if (!$isPortalViewer && $studentId) {
     // Calculate statistics
     $statsSql = "SELECT 
         COUNT(*) as total_invoices,
@@ -73,7 +73,7 @@ if (!$isSuperAdmin && $studentId) {
 
 // Get invoices for student
 $invoices = [];
-if (!$isSuperAdmin && $studentId) {
+if (!$isPortalViewer && $studentId) {
     $invoiceSql = "SELECT i.*, sess.session_name
                    FROM fee_invoices i
                    LEFT JOIN academic_sessions sess ON i.session_id = sess.id
@@ -103,7 +103,7 @@ if (!$isSuperAdmin && $studentId) {
 // Get outstanding fees (monthly assignments + invoices)
 $outstandingFees = [];
 $totalOutstanding = 0;
-if (!$isSuperAdmin && $studentId) {
+if (!$isPortalViewer && $studentId) {
     // Get outstanding monthly fee assignments
     $feesSql = "SELECT mfa.*, ft.fee_name, ft.fee_code, c.class_name, sess.session_name
                 FROM monthly_fee_assignments mfa
@@ -202,7 +202,7 @@ include '../../includes/sidebar.php';
                 <div class="col-12">
                     <div class="page-title-box">
                         <div class="page-title-right">
-                            <?php if (!$isSuperAdmin && $student): ?>
+                            <?php if (!$isPortalViewer && $student): ?>
                                 <a href="<?php echo APP_URL; ?>modules/student/my-receipts.php" class="btn btn-success btn-sm me-2">
                                     <i class="ri-file-list-line"></i> View Receipts
                                 </a>
@@ -217,7 +217,7 @@ include '../../includes/sidebar.php';
                 </div>
             </div>
 
-            <?php if (!$isSuperAdmin && !$student): ?>
+            <?php if (!$isPortalViewer && !$student): ?>
             <div class="row">
                 <div class="col-12">
                     <div class="alert alert-danger">
@@ -228,7 +228,7 @@ include '../../includes/sidebar.php';
             </div>
             <?php endif; ?>
 
-            <?php if (!$isSuperAdmin && $student): ?>
+            <?php if (!$isPortalViewer && $student): ?>
             <!-- Financial Statistics -->
             <div class="row">
                 <div class="col-xl-3 col-md-6">

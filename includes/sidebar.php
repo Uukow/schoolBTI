@@ -27,6 +27,17 @@ $isHrAdmin    = $isAdmin;
 $isHrSelf     = ($isTeacher || $isStaff) && !$isAdmin;
 $showHrMenu   = $isAdmin || $isHrSelf || $isAccountant;
 
+$reqUri         = $_SERVER['REQUEST_URI'] ?? '';
+$navInTeacher   = (strpos($reqUri, '/modules/teacher/') !== false);
+$navInStudent   = (strpos($reqUri, '/modules/student/') !== false);
+$navInLaboratory = (strpos($reqUri, '/modules/laboratory/') !== false);
+
+$isLabStaff = hasRole(['Super Admin', 'Admin', 'Lab Director', 'Lab Manager', 'Lab Technician', 'Safety Officer', 'Procurement Officer', 'Maintenance Officer']);
+$isLabAdmin = hasRole(['Super Admin', 'Admin', 'Lab Director', 'Lab Manager']);
+$showTeacherPortal = $isTeacher || $isSuperAdmin;
+$showStudentPortal = $isStudent || $isSuperAdmin;
+$showLabManagement = $isLabStaff;
+
 /**
  * Render a second-level collapsible group with third-level links.
  */
@@ -144,16 +155,19 @@ $logoDarkSm = !empty($systemLogo) && file_exists(ABSPATH . $systemLogo)
                 </a>
             </li>
 
-            <?php if ($isTeacher || $isSuperAdmin): ?>
+            <?php if ($showTeacherPortal || $showStudentPortal): ?>
             <li class="side-nav-title">My Portal</li>
+            <?php endif; ?>
+
+            <?php if ($showTeacherPortal): ?>
             <!-- Teacher Portal -->
             <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarTeacher" aria-expanded="false" aria-controls="sidebarTeacher" class="side-nav-link">
+                <a data-bs-toggle="collapse" href="#sidebarTeacher" aria-expanded="<?php echo $navInTeacher ? 'true' : 'false'; ?>" aria-controls="sidebarTeacher" class="side-nav-link">
                     <i class="ri-user-star-line"></i>
                     <span> Teacher Portal </span>
                     <span class="menu-arrow"></span>
                 </a>
-                <div class="collapse" id="sidebarTeacher">
+                <div class="collapse<?php echo $navInTeacher ? ' show' : ''; ?>" id="sidebarTeacher">
                     <ul class="side-nav-second-level">
                         <li><a href="<?php echo APP_URL; ?>modules/teacher/dashboard.php">Dashboard</a></li>
                         <li><a href="<?php echo APP_URL; ?>modules/teacher/my-classes.php">My Classes</a></li>
@@ -161,20 +175,27 @@ $logoDarkSm = !empty($systemLogo) && file_exists(ABSPATH . $systemLogo)
                         <?php if ($isTeacher): ?>
                         <li><a href="<?php echo APP_URL; ?>modules/teacher/my-profile.php">My Profile</a></li>
                         <?php endif; ?>
+                        <?php if ($isTeacher): ?>
+                        <li class="menu-title mt-2">Laboratory</li>
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/experiments.php">Experiments</a></li>
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/requests.php">Material Requests</a></li>
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/bookings.php">Lab Bookings</a></li>
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/issues.php">Issues &amp; Faults</a></li>
+                        <?php endif; ?>
                     </ul>
                 </div>
             </li>
             <?php endif; ?>
 
-            <?php if ($isStudent || $isSuperAdmin): ?>
+            <?php if ($showStudentPortal): ?>
             <!-- Student Portal -->
             <li class="side-nav-item">
-                <a data-bs-toggle="collapse" href="#sidebarStudent" aria-expanded="false" aria-controls="sidebarStudent" class="side-nav-link">
+                <a data-bs-toggle="collapse" href="#sidebarStudent" aria-expanded="<?php echo $navInStudent ? 'true' : 'false'; ?>" aria-controls="sidebarStudent" class="side-nav-link">
                     <i class="ri-graduation-cap-line"></i>
                     <span> Student Portal </span>
                     <span class="menu-arrow"></span>
                 </a>
-                <div class="collapse" id="sidebarStudent">
+                <div class="collapse<?php echo $navInStudent ? ' show' : ''; ?>" id="sidebarStudent">
                     <ul class="side-nav-second-level">
                         <li><a href="<?php echo APP_URL; ?>modules/student/dashboard.php">Dashboard</a></li>
                         <li><a href="<?php echo APP_URL; ?>modules/student/my-classes.php">My Classes</a></li>
@@ -189,6 +210,69 @@ $logoDarkSm = !empty($systemLogo) && file_exists(ABSPATH . $systemLogo)
                         <li><a href="<?php echo APP_URL; ?>modules/student/financial-statement.php">Financial Statement</a></li>
                         <?php if (hasRole(['Student'])): ?>
                         <li><a href="<?php echo APP_URL; ?>modules/student/my-profile.php">My Profile</a></li>
+                        <?php endif; ?>
+                        <?php if ($isStudent): ?>
+                        <li class="menu-title mt-2">Laboratory</li>
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/requests.php">Material Requests</a></li>
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/bookings.php">Lab Bookings</a></li>
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/experiments.php">Experiments</a></li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+            </li>
+            <?php endif; ?>
+
+            <?php if ($showLabManagement): ?>
+            <li class="side-nav-title">Laboratory Management</li>
+
+            <!-- LAB Management System -->
+            <li class="side-nav-item">
+                <a data-bs-toggle="collapse" href="#sidebarLab" aria-expanded="<?php echo $navInLaboratory ? 'true' : 'false'; ?>" aria-controls="sidebarLab" class="side-nav-link">
+                    <i class="ri-flask-line"></i>
+                    <span> LAB Management </span>
+                    <span class="menu-arrow"></span>
+                </a>
+                <div class="collapse<?php echo $navInLaboratory ? ' show' : ''; ?>" id="sidebarLab">
+                    <ul class="side-nav-second-level">
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/dashboard.php">LAB Dashboard</a></li>
+                        <?php if ($isLabAdmin): ?>
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/sections.php">Lab Sections</a></li>
+                        <?php endif; ?>
+                        <?php
+                        sidebarThirdLevelMenu('sidebarLabInventory', 'Inventory', [
+                            ['url' => APP_URL . 'modules/laboratory/inventory.php', 'label' => 'All Items'],
+                            ['url' => APP_URL . 'modules/laboratory/inventory.php?status=available', 'label' => 'Available Items'],
+                            ['url' => APP_URL . 'modules/laboratory/inventory.php?status=damaged', 'label' => 'Damaged Items'],
+                            ['url' => APP_URL . 'modules/laboratory/inventory.php?status=issued', 'label' => 'Issued Items'],
+                        ]);
+                        sidebarThirdLevelMenu('sidebarLabRequests', 'Material Requests', [
+                            ['url' => APP_URL . 'modules/laboratory/requests.php', 'label' => 'All Requests'],
+                            ['url' => APP_URL . 'modules/laboratory/requests.php?status=pending', 'label' => 'Pending Requests'],
+                            ['url' => APP_URL . 'modules/laboratory/requests.php?status=approved', 'label' => 'Approved Requests'],
+                            ['url' => APP_URL . 'modules/laboratory/requests.php?status=issued', 'label' => 'Issued'],
+                        ]);
+                        sidebarThirdLevelMenu('sidebarLabExperiments', 'Experiments', [
+                            ['url' => APP_URL . 'modules/laboratory/experiments.php', 'label' => 'All Experiments'],
+                        ]);
+                        if ($isLabAdmin || hasRole(['Lab Technician', 'Maintenance Officer'])):
+                        sidebarThirdLevelMenu('sidebarLabMaintenance', 'Maintenance', [
+                            ['url' => APP_URL . 'modules/laboratory/maintenance.php', 'label' => 'All Records'],
+                            ['url' => APP_URL . 'modules/laboratory/maintenance.php?type=repair', 'label' => 'Repairs'],
+                            ['url' => APP_URL . 'modules/laboratory/maintenance.php?type=preventive', 'label' => 'Preventive'],
+                        ]);
+                        endif;
+                        ?>
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/issues.php">Issues &amp; Faults</a></li>
+                        <?php if ($isLabAdmin || hasRole(['Safety Officer'])): ?>
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/safety.php">Safety Management</a></li>
+                        <?php endif; ?>
+                        <?php if ($isLabAdmin || hasRole(['Procurement Officer'])): ?>
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/procurement.php">Procurement</a></li>
+                        <?php endif; ?>
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/bookings.php">Lab Bookings</a></li>
+                        <?php if ($isLabAdmin): ?>
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/visitors.php">Visitor Log</a></li>
+                        <li><a href="<?php echo APP_URL; ?>modules/laboratory/reports.php">LAB Reports</a></li>
                         <?php endif; ?>
                     </ul>
                 </div>

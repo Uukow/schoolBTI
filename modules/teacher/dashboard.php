@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Teacher', 'Super Admin']);
+requireRole(teacherPortalRoles());
 
 $pageTitle = __('teacher_dashboard');
 
 // Get current user and teacher record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $teacher = null;
 $teacherId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     // Super Admin can view all data - no teacher filtering
     $teacherId = null;
 } else {
@@ -38,7 +38,7 @@ $currentSession = getCurrentSession();
 // Get teacher statistics
 $stats = [];
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     // Super Admin sees all data
     $sql = "SELECT COUNT(DISTINCT cs.class_id) as count 
             FROM class_subjects cs 
@@ -140,7 +140,7 @@ $sql = "SELECT * FROM announcements
 $announcements = fetchAll(executeQuery($sql));
 
 // Recent lesson plans
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $sql = "SELECT lp.*, c.class_name, s.subject_name, st.first_name, st.last_name
             FROM lesson_plans lp
             INNER JOIN classes c ON lp.class_id = c.id
@@ -175,7 +175,7 @@ include '../../includes/sidebar.php';
                     <div class="page-title-box">
                         <h4 class="page-title"><?php echo __('teacher_dashboard'); ?></h4>
                         <div class="page-title-right">
-                            <?php if ($isSuperAdmin): ?>
+                            <?php if ($isPortalViewer): ?>
                                 <span class="text-muted">Super Admin View - All Teachers</span>
                             <?php else: ?>
                                 <span class="text-muted"><?php echo __('welcome'); ?>, <?php echo htmlspecialchars($teacher['first_name'] . ' ' . $teacher['last_name']); ?></span>

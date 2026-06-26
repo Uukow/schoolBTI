@@ -212,6 +212,11 @@ if (file_exists(ABSPATH . 'includes/dashboard-helpers.php')) {
     require_once ABSPATH . 'includes/dashboard-helpers.php';
 }
 
+// Load laboratory helpers
+if (file_exists(ABSPATH . 'includes/lab-functions.php')) {
+    require_once ABSPATH . 'includes/lab-functions.php';
+}
+
 // Load language support
 if (file_exists(ABSPATH . 'includes/language.php')) {
     require_once ABSPATH . 'includes/language.php';

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(php -l \"C:\\\\xampp\\\\htdocs\\\\bti\\\\includes\\\\sidebar.php\" 2>&1; php -l \"C:\\\\xampp\\\\htdocs\\\\bti\\\\modules\\\\laboratory\\\\dashboard.php\" 2>&1; php -l \"C:\\\\xampp\\\\htdocs\\\\bti\\\\modules\\\\laboratory\\\\inventory.php\" 2>&1; php -l \"C:\\\\xampp\\\\htdocs\\\\bti\\\\modules\\\\laboratory\\\\requests.php\" 2>&1)",
+      "PowerShell(Get-Content \"C:\\\\xampp\\\\htdocs\\\\bti\\\\database\\\\lab_management_migration.sql\" -Raw | & \"C:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root --password=\"\" schoolbti 2>&1)",
+      "PowerShell(& \"C:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root --password=\"\" schoolbti -e \"DESCRIBE permissions;\" 2>&1)",
+      "PowerShell(& \"C:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root --password=\"\" schoolbti -e \"SHOW TABLES LIKE 'lab_%';\" 2>&1)",
+      "PowerShell(& \"C:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe\" -u root --password=\"\" schoolbti -e \"SELECT permission_key, module FROM permissions WHERE module='laboratory';\" 2>&1)"
+    ]
+  }
+}

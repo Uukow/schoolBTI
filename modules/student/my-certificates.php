@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Student', 'Super Admin']);
+requireRole(studentPortalRoles());
 
 $pageTitle = 'My Certificates';
 
 // Get current user and student record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $student = null;
 $studentId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $studentId = isset($_GET['student_id']) ? intval($_GET['student_id']) : null;
 } else {
     $student = getStudentByUserId($currentUser['id']);

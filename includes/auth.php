@@ -106,6 +106,24 @@ function requireRole($roles, $redirectUrl = null) {
     }
 }
 
+/** Roles allowed to browse the teacher portal. */
+function teacherPortalRoles(): array
+{
+    return ['Teacher', 'Super Admin'];
+}
+
+/** Roles allowed to browse the student portal. */
+function studentPortalRoles(): array
+{
+    return ['Student', 'Super Admin'];
+}
+
+/** Super Admin viewing a portal without a linked teacher/student profile. */
+function isPortalAdminViewer(): bool
+{
+    return hasRole(['Super Admin']);
+}
+
 /**
  * Login user
  * 

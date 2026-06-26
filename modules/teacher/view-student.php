@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Teacher', 'Super Admin']);
+requireRole(teacherPortalRoles());
 
 $pageTitle = 'Student Details';
 
 // Get current user and teacher record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $teacher = null;
 $teacherId = null;
 
-if (!$isSuperAdmin) {
+if (!$isPortalViewer) {
     $teacher = getTeacherByUserId($currentUser['id']);
     if (!$teacher) {
         $_SESSION['error'] = 'Teacher profile not found. Please contact administrator.';
@@ -41,7 +41,7 @@ if (empty($studentId)) {
 }
 
 // Get student details
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     // Super Admin can view any student
     $sql = "SELECT s.*, c.class_name, sec.section_name, b.branch_name
             FROM students s

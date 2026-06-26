@@ -11,7 +11,7 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Student', 'Super Admin'], APP_URL . 'modules/student/dashboard.php');
+requireRole(studentPortalRoles(), APP_URL . 'modules/student/dashboard.php');
 
 $pageTitle = 'My Profile';
 

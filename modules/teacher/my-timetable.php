@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Teacher', 'Super Admin']);
+requireRole(teacherPortalRoles());
 
 $pageTitle = __('my_timetable');
 
 // Get current user and teacher record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $teacher = null;
 $teacherId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     // Super Admin sees all timetables
     $teacherId = null;
 } else {
@@ -37,7 +37,7 @@ if ($isSuperAdmin) {
 $currentSession = getCurrentSession();
 
 // Get timetable
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $sql = "SELECT t.*, c.class_name, sec.section_name, s.subject_name, s.subject_code, st.first_name as teacher_first_name, st.last_name as teacher_last_name
             FROM timetable t
             INNER JOIN classes c ON t.class_id = c.id
@@ -113,7 +113,7 @@ include '../../includes/sidebar.php';
                                         <thead>
                                             <tr>
                                                 <th><?php echo __('day'); ?></th>
-                                                <?php if ($isSuperAdmin): ?>
+                                                <?php if ($isPortalViewer): ?>
                                                 <th><?php echo __('teacher'); ?></th>
                                                 <?php endif; ?>
                                                 <th><?php echo __('time'); ?></th>
@@ -132,7 +132,7 @@ include '../../includes/sidebar.php';
                                                                     <strong><?php echo htmlspecialchars($day); ?></strong>
                                                                 </td>
                                                             <?php endif; ?>
-                                                            <?php if ($isSuperAdmin): ?>
+                                                            <?php if ($isPortalViewer): ?>
                                                             <td><?php echo htmlspecialchars(($entry['teacher_first_name'] ?? '') . ' ' . ($entry['teacher_last_name'] ?? '')); ?></td>
                                                             <?php endif; ?>
                                                             <td>
@@ -150,7 +150,7 @@ include '../../includes/sidebar.php';
                                                 <?php else: ?>
                                                     <tr>
                                                         <td><strong><?php echo htmlspecialchars($day); ?></strong></td>
-                                                        <td colspan="<?php echo $isSuperAdmin ? '5' : '4'; ?>" class="text-muted text-center"><?php echo __('no_classes_scheduled'); ?></td>
+                                                        <td colspan="<?php echo $isPortalViewer ? '5' : '4'; ?>" class="text-muted text-center"><?php echo __('no_classes_scheduled'); ?></td>
                                                     </tr>
                                                 <?php endif; ?>
                                             <?php endforeach; ?>

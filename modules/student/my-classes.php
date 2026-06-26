@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Student', 'Super Admin'], APP_URL . 'modules/student/dashboard.php');
+requireRole(studentPortalRoles(), APP_URL . 'modules/student/dashboard.php');
 
 $pageTitle = 'My Classes';
 
 // Get current user and student record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $student = null;
 $studentId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $studentId = null;
 } else {
     $student = getStudentByUserId($currentUser['id']);
@@ -42,7 +42,7 @@ if (!$currentSession) {
 }
 
 // Get student's classes and subjects
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $assignedClasses = [];
 } else {
     if ($student && isset($student['current_class_id']) && isset($student['current_section_id']) && $student['current_class_id'] && $student['current_section_id']) {
@@ -78,7 +78,7 @@ include '../../includes/sidebar.php';
                 <div class="col-12">
                     <div class="page-title-box">
                         <h4 class="page-title">My Classes & Subjects</h4>
-                        <?php if (!$isSuperAdmin && $student): ?>
+                        <?php if (!$isPortalViewer && $student): ?>
                         <div class="page-title-right">
                             <span class="text-muted">Class: <?php echo htmlspecialchars($student['current_class_id'] ? 'Class ' . $student['current_class_id'] : 'N/A'); ?></span>
                         </div>
@@ -90,7 +90,7 @@ include '../../includes/sidebar.php';
             <!-- Classes List -->
             <div class="row">
                 <div class="col-12">
-                    <?php if (!$isSuperAdmin && $student && isset($classGraduated) && $classGraduated): ?>
+                    <?php if (!$isPortalViewer && $student && isset($classGraduated) && $classGraduated): ?>
                     <div class="alert alert-warning">
                         <h5><i class="ri-graduation-cap-line"></i> Class Graduated</h5>
                         <p>Your class has been graduated. You can view your subjects and historical data, but no new academic activities can be performed.</p>
@@ -101,7 +101,7 @@ include '../../includes/sidebar.php';
                         <div class="card-body">
                             <h4 class="header-title mb-3">My Subjects</h4>
                             
-                            <?php if (!$isSuperAdmin && !$student): ?>
+                            <?php if (!$isPortalViewer && !$student): ?>
                                 <div class="alert alert-danger">
                                     <h5><i class="ri-error-warning-line"></i> Student Profile Not Found</h5>
                                     <p>Your user account is not linked to a student record. Please contact your administrator.</p>

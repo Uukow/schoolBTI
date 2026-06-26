@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Student', 'Super Admin'], APP_URL . 'modules/student/dashboard.php');
+requireRole(studentPortalRoles(), APP_URL . 'modules/student/dashboard.php');
 
 $pageTitle = 'My Assignments';
 
 // Get current user and student record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $student = null;
 $studentId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $studentId = null;
 } else {
     $student = getStudentByUserId($currentUser['id']);
@@ -41,12 +41,12 @@ $statusFilter = $_GET['status'] ?? '';
 
 // Check if student's class is graduated
 $classGraduated = false;
-if (!$isSuperAdmin && $student && isset($student['current_class_id']) && $student['current_class_id']) {
+if (!$isPortalViewer && $student && isset($student['current_class_id']) && $student['current_class_id']) {
     $classGraduated = isClassGraduated($student['current_class_id']);
 }
 
 // Get assignments
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $assignments = [];
 } else {
     if ($student && isset($student['current_class_id']) && $student['current_class_id']) {
@@ -103,7 +103,7 @@ include '../../includes/sidebar.php';
             </div>
 
             <!-- Filter Form -->
-            <?php if (!$isSuperAdmin): ?>
+            <?php if (!$isPortalViewer): ?>
             <div class="row">
                 <div class="col-12">
                     <div class="card">
@@ -141,7 +141,7 @@ include '../../includes/sidebar.php';
             <!-- Assignments List -->
             <div class="row">
                 <div class="col-12">
-                    <?php if (!$isSuperAdmin && $classGraduated): ?>
+                    <?php if (!$isPortalViewer && $classGraduated): ?>
                     <div class="alert alert-warning">
                         <h5><i class="ri-graduation-cap-line"></i> Class Graduated</h5>
                         <p>Your class has been graduated. You can view your assignments and historical data, but no new submissions can be made.</p>

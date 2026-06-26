@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Student', 'Super Admin'], APP_URL . 'modules/student/dashboard.php');
+requireRole(studentPortalRoles(), APP_URL . 'modules/student/dashboard.php');
 
 $pageTitle = 'My Timetable';
 
 // Get current user and student record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $student = null;
 $studentId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $studentId = null;
 } else {
     $student = getStudentByUserId($currentUser['id']);
@@ -38,12 +38,12 @@ $currentSession = getCurrentSession();
 
 // Check if student's class is graduated
 $classGraduated = false;
-if (!$isSuperAdmin && $student && isset($student['current_class_id']) && $student['current_class_id']) {
+if (!$isPortalViewer && $student && isset($student['current_class_id']) && $student['current_class_id']) {
     $classGraduated = isClassGraduated($student['current_class_id']);
 }
 
 // Get timetable
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $timetable = [];
 } else {
     if ($student && isset($student['current_class_id']) && isset($student['current_section_id']) && $student['current_class_id'] && $student['current_section_id']) {
@@ -100,7 +100,7 @@ include '../../includes/sidebar.php';
             <!-- Timetable -->
             <div class="row">
                 <div class="col-12">
-                    <?php if (!$isSuperAdmin && $classGraduated): ?>
+                    <?php if (!$isPortalViewer && $classGraduated): ?>
                     <div class="alert alert-warning">
                         <h5><i class="ri-graduation-cap-line"></i> Class Graduated</h5>
                         <p>Your class has been graduated. This timetable is for reference only.</p>

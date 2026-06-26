@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Student', 'Super Admin'], APP_URL . 'dashboard.php');
+requireRole(studentPortalRoles(), APP_URL . 'dashboard.php');
 
 $pageTitle = 'Student Dashboard';
 
 // Get current user and student record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $student = null;
 $studentId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     // Super Admin can view all data - no student filtering
     $studentId = null;
 } else {
@@ -43,7 +43,7 @@ $currentSession = getCurrentSession();
 // Get student statistics
 $stats = [];
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     // Super Admin sees all data
     $sql = "SELECT COUNT(DISTINCT s.id) as count 
             FROM students s
@@ -172,7 +172,7 @@ if ($isSuperAdmin) {
 }
 
 // Get today's timetable
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $todayClasses = [];
 } else {
     if ($student && isset($student['current_class_id']) && isset($student['current_section_id']) && $student['current_class_id'] && $student['current_section_id']) {
@@ -202,7 +202,7 @@ $announcements = fetchAll(executeQuery($sql));
 
 // Recent marks (for student)
 $recentMarks = [];
-if (!$isSuperAdmin && $studentId) {
+if (!$isPortalViewer && $studentId) {
     $sql = "SELECT sm.*, es.exam_date, s.subject_name, e.exam_name, es.total_marks
             FROM student_marks sm
             INNER JOIN exam_schedule es ON sm.exam_schedule_id = es.id
@@ -217,7 +217,7 @@ if (!$isSuperAdmin && $studentId) {
 
 // Upcoming assignments (for student - only if class is not graduated)
 $upcomingAssignments = [];
-if (!$isSuperAdmin && $studentId && $student && isset($student['current_class_id']) && $student['current_class_id'] && !$classGraduated) {
+if (!$isPortalViewer && $studentId && $student && isset($student['current_class_id']) && $student['current_class_id'] && !$classGraduated) {
     $sql = "SELECT a.*, c.class_name, c.graduation_status, s.subject_name,
             (SELECT id FROM assignment_submissions WHERE assignment_id = a.id AND student_id = ?) as submission_id
             FROM assignments a
@@ -234,7 +234,7 @@ if (!$isSuperAdmin && $studentId && $student && isset($student['current_class_id
 // Get outstanding fees (for student)
 $outstandingFees = [];
 $totalOutstanding = 0;
-if (!$isSuperAdmin && $studentId) {
+if (!$isPortalViewer && $studentId) {
     // Get outstanding monthly fee assignments
     $feesSql = "SELECT mfa.*, ft.fee_name, ft.fee_code, c.class_name
                 FROM monthly_fee_assignments mfa
@@ -307,7 +307,7 @@ include '../../includes/sidebar.php';
                     <div class="page-title-box">
                         <h4 class="page-title">Student Dashboard</h4>
                         <div class="page-title-right">
-                            <?php if ($isSuperAdmin): ?>
+                            <?php if ($isPortalViewer): ?>
                                 <span class="text-muted">Super Admin View - All Students</span>
                             <?php elseif ($student): ?>
                                 <span class="text-muted">Welcome, <?php echo htmlspecialchars($student['first_name'] . ' ' . $student['last_name']); ?></span>
@@ -319,7 +319,7 @@ include '../../includes/sidebar.php';
                 </div>
             </div>
 
-            <?php if (!$isSuperAdmin && $student && isset($classGraduated) && $classGraduated): ?>
+            <?php if (!$isPortalViewer && $student && isset($classGraduated) && $classGraduated): ?>
             <!-- Graduation Notice -->
             <div class="row">
                 <div class="col-12">
@@ -331,7 +331,7 @@ include '../../includes/sidebar.php';
             </div>
             <?php endif; ?>
 
-            <?php if (!$isSuperAdmin && !$student): ?>
+            <?php if (!$isPortalViewer && !$student): ?>
             <!-- Error Message if Student Record Not Found -->
             <div class="row">
                 <div class="col-12">
@@ -348,7 +348,7 @@ include '../../includes/sidebar.php';
             <?php endif; ?>
 
             <!-- Statistics Cards -->
-            <?php if (!$isSuperAdmin): ?>
+            <?php if (!$isPortalViewer): ?>
             <div class="row">
                 <div class="col-xl-3 col-md-6">
                     <div class="card widget-flat">
@@ -449,7 +449,7 @@ include '../../includes/sidebar.php';
             <?php endif; ?>
 
             <!-- Outstanding Fees Alert -->
-            <?php if (!$isSuperAdmin && !empty($outstandingFees)): ?>
+            <?php if (!$isPortalViewer && !empty($outstandingFees)): ?>
             <div class="row">
                 <div class="col-12">
                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -467,7 +467,7 @@ include '../../includes/sidebar.php';
             <?php endif; ?>
 
             <!-- Outstanding Fees Section -->
-            <?php if (!$isSuperAdmin && !empty($outstandingFees)): ?>
+            <?php if (!$isPortalViewer && !empty($outstandingFees)): ?>
             <div class="row">
                 <div class="col-12">
                     <div class="card">
@@ -591,7 +591,7 @@ include '../../includes/sidebar.php';
 
             <div class="row">
                 <!-- Today's Classes -->
-                <?php if (!$isSuperAdmin): ?>
+                <?php if (!$isPortalViewer): ?>
                 <div class="col-xl-6">
                     <div class="card">
                         <div class="card-body">
@@ -631,7 +631,7 @@ include '../../includes/sidebar.php';
                 <?php endif; ?>
 
                 <!-- Recent Announcements -->
-                <div class="col-xl-<?php echo $isSuperAdmin ? '12' : '6'; ?>">
+                <div class="col-xl-<?php echo $isPortalViewer ? '12' : '6'; ?>">
                     <div class="card">
                         <div class="card-body">
                             <h4 class="header-title mb-3">Recent Announcements</h4>
@@ -653,7 +653,7 @@ include '../../includes/sidebar.php';
                 </div>
             </div>
 
-            <?php if (!$isSuperAdmin): ?>
+            <?php if (!$isPortalViewer): ?>
             <!-- Recent Marks -->
             <?php if (!empty($recentMarks)): ?>
             <div class="row">

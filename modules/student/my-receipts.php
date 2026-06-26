@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Student', 'Super Admin'], APP_URL . 'modules/student/dashboard.php');
+requireRole(studentPortalRoles(), APP_URL . 'modules/student/dashboard.php');
 
 $pageTitle = 'My Receipts';
 
 // Get current user and student record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $student = null;
 $studentId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $studentId = null;
 } else {
     $student = getStudentByUserId($currentUser['id']);
@@ -49,7 +49,7 @@ $sessions = fetchAll(executeQuery($sessionsSql));
 $receiptsByMonth = [];
 $allReceipts = [];
 
-if (!$isSuperAdmin && $studentId) {
+if (!$isPortalViewer && $studentId) {
     // Build query for all receipts
     $receiptsSql = "SELECT p.*, i.invoice_no, i.status as invoice_status, i.session_id,
                     sess.session_name,
@@ -139,7 +139,7 @@ include '../../includes/sidebar.php';
                         </div>
                         <h4 class="page-title">My Receipts</h4>
                         <div class="page-title-right">
-                            <?php if (!$isSuperAdmin && $student): ?>
+                            <?php if (!$isPortalViewer && $student): ?>
                                 <span class="text-muted"><?php echo htmlspecialchars($student['first_name'] . ' ' . $student['last_name']); ?></span>
                             <?php endif; ?>
                         </div>
@@ -147,7 +147,7 @@ include '../../includes/sidebar.php';
                 </div>
             </div>
 
-            <?php if (!$isSuperAdmin && !$student): ?>
+            <?php if (!$isPortalViewer && !$student): ?>
             <div class="row">
                 <div class="col-12">
                     <div class="alert alert-danger">
@@ -158,7 +158,7 @@ include '../../includes/sidebar.php';
             </div>
             <?php endif; ?>
 
-            <?php if (!$isSuperAdmin && $student): ?>
+            <?php if (!$isPortalViewer && $student): ?>
             <!-- Statistics -->
             <div class="row">
                 <div class="col-xl-6 col-md-6">

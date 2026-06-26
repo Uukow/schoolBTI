@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Teacher', 'Super Admin']);
+requireRole(teacherPortalRoles());
 
 $pageTitle = __('enter_marks');
 
 // Get current user and teacher record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $teacher = null;
 $teacherId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     // Super Admin can enter marks for any subject
     $teacherId = null;
 } else {
@@ -42,7 +42,7 @@ $classFilter = $_GET['class_id'] ?? '';
 $subjectFilter = $_GET['subject_id'] ?? '';
 
 // Get subjects for filter
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $subjectsSql = "SELECT * FROM subjects WHERE is_active = 1 ORDER BY subject_name";
     $subjects = fetchAll(executeQuery($subjectsSql));
     
@@ -70,7 +70,7 @@ if ($isSuperAdmin) {
 // Get exam schedules
 $examSchedules = [];
 if (!empty($subjectFilter)) {
-    if ($isSuperAdmin) {
+    if ($isPortalViewer) {
         // Super Admin sees all exam schedules
         $sql = "SELECT es.*, e.exam_name, s.subject_name, c.class_name
                 FROM exam_schedule es
@@ -149,7 +149,7 @@ $selectedSchedule = null;
 
 if (!empty($examScheduleId)) {
     // Get exam schedule details
-    if ($isSuperAdmin) {
+    if ($isPortalViewer) {
         $sql = "SELECT es.*, e.exam_name, s.subject_name, c.class_name
                 FROM exam_schedule es
                 INNER JOIN exams e ON es.exam_id = e.id

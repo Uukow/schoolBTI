@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Student', 'Super Admin'], APP_URL . 'modules/student/dashboard.php');
+requireRole(studentPortalRoles(), APP_URL . 'modules/student/dashboard.php');
 
 $pageTitle = 'View Invoice';
 
 // Get current user and student record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $student = null;
 $studentId = null;
 
-if (!$isSuperAdmin) {
+if (!$isPortalViewer) {
     $student = getStudentByUserId($currentUser['id']);
     if (!$student) {
         $_SESSION['error'] = 'Student profile not found';
@@ -60,7 +60,7 @@ $params = [$invoiceId];
 $types = 'i';
 
 // Security check: Only allow students to view their own invoices
-if (!$isSuperAdmin && $studentId) {
+if (!$isPortalViewer && $studentId) {
     $sql .= " AND i.student_id = ?";
     $params[] = $studentId;
     $types .= 'i';

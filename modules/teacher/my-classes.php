@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Teacher', 'Super Admin']);
+requireRole(teacherPortalRoles());
 
 $pageTitle = __('my_classes');
 
 // Get current user and teacher record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $teacher = null;
 $teacherId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     // Super Admin sees all classes/subjects
     $teacherId = null;
 } else {
@@ -43,7 +43,7 @@ if (!$currentSession) {
 }
 
 // Get assigned classes and subjects
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $sql = "SELECT cs.*, c.class_name, s.subject_name, s.subject_code, st.first_name as teacher_first_name, st.last_name as teacher_last_name,
             (SELECT COUNT(*) FROM students st WHERE st.current_class_id = cs.class_id AND st.status = 'Active') as student_count
             FROM class_subjects cs
@@ -105,7 +105,7 @@ include '../../includes/sidebar.php';
                                     <table class="table table-striped table-bordered dt-responsive nowrap" id="classes-table">
                                         <thead>
                                             <tr>
-                                                <?php if ($isSuperAdmin): ?>
+                                                <?php if ($isPortalViewer): ?>
                                                 <th><?php echo __('teacher'); ?></th>
                                                 <?php endif; ?>
                                                 <th><?php echo __('class'); ?></th>
@@ -118,7 +118,7 @@ include '../../includes/sidebar.php';
                                         <tbody>
                                             <?php foreach ($assignedClasses as $class): ?>
                                                 <tr>
-                                                    <?php if ($isSuperAdmin): ?>
+                                                    <?php if ($isPortalViewer): ?>
                                                     <td><?php echo htmlspecialchars(($class['teacher_first_name'] ?? '') . ' ' . ($class['teacher_last_name'] ?? '')); ?></td>
                                                     <?php endif; ?>
                                                     <td><?php echo htmlspecialchars($class['class_name']); ?></td>

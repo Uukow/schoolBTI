@@ -11,19 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Teacher', 'Super Admin', 'Admin']);
+requireRole(teacherPortalRoles());
 
 $pageTitle = 'Lesson Plan Details';
 
 // Get current user and teacher record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
-$isAdmin = hasRole(['Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $teacher = null;
 $teacherId = null;
 
-if (!$isSuperAdmin && !$isAdmin) {
+if (!$isPortalViewer) {
     $teacher = getTeacherByUserId($currentUser['id']);
     if (!$teacher) {
         $_SESSION['error'] = 'Teacher profile not found. Please contact administrator.';
@@ -42,7 +41,7 @@ if (empty($lessonPlanId)) {
 }
 
 // Get lesson plan details
-if ($isSuperAdmin || $isAdmin) {
+if ($isPortalViewer) {
     // Super Admin and Admin can view any lesson plan
     $sql = "SELECT lp.*, c.class_name, c.class_code, s.subject_name, s.subject_code,
             st.first_name as teacher_first_name, st.last_name as teacher_last_name, st.staff_id,
@@ -139,7 +138,7 @@ include '../../includes/sidebar.php';
                                         <p class="mb-0"><?php echo htmlspecialchars($lessonPlan['session_name'] ?? 'N/A'); ?></p>
                                     </div>
                                 </div>
-                                <?php if ($isSuperAdmin || $isAdmin): ?>
+                                <?php if ($isPortalViewer): ?>
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label fw-bold text-muted">Teacher</label>

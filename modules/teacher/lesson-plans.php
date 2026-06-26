@@ -11,18 +11,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Teacher', 'Super Admin']);
+requireRole(teacherPortalRoles());
 
 $pageTitle = 'Lesson Plans';
 
 // Get current user and teacher record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $teacher = null;
 $teacherId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     // Super Admin sees all lesson plans
     $teacherId = null;
 } else {
@@ -43,7 +43,7 @@ if (!$currentSession) {
 }
 
 // Get lesson plans
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     $sql = "SELECT lp.*, c.class_name, s.subject_name, st.first_name as teacher_first_name, st.last_name as teacher_last_name
             FROM lesson_plans lp
             INNER JOIN classes c ON lp.class_id = c.id
@@ -150,7 +150,7 @@ include '../../includes/sidebar.php';
                                         <thead>
                                             <tr>
                                                 <th>Date</th>
-                                                <?php if ($isSuperAdmin): ?>
+                                                <?php if ($isPortalViewer): ?>
                                                 <th>Teacher</th>
                                                 <?php endif; ?>
                                                 <th>Class</th>
@@ -164,7 +164,7 @@ include '../../includes/sidebar.php';
                                             <?php foreach ($lessonPlans as $plan): ?>
                                                 <tr>
                                                     <td><?php echo formatDate($plan['lesson_date']); ?></td>
-                                                    <?php if ($isSuperAdmin): ?>
+                                                    <?php if ($isPortalViewer): ?>
                                                     <td><?php echo htmlspecialchars(($plan['teacher_first_name'] ?? '') . ' ' . ($plan['teacher_last_name'] ?? '')); ?></td>
                                                     <?php endif; ?>
                                                     <td><?php echo htmlspecialchars($plan['class_name']); ?></td>
@@ -180,7 +180,7 @@ include '../../includes/sidebar.php';
                                                            class="btn btn-sm btn-info">
                                                             <i class="ri-eye-line"></i> View
                                                         </a>
-                                                        <?php if ($isSuperAdmin || $plan['teacher_id'] == $teacherId): ?>
+                                                        <?php if ($isPortalViewer || $plan['teacher_id'] == $teacherId): ?>
                                                         <button type="button" class="btn btn-sm btn-primary" onclick="editLessonPlan(<?php echo $plan['id']; ?>)">
                                                             <i class="ri-edit-line"></i> Edit
                                                         </button>
@@ -232,7 +232,7 @@ include '../../includes/sidebar.php';
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <?php if ($isSuperAdmin): ?>
+                        <?php if ($isPortalViewer): ?>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Teacher <span class="text-danger">*</span></label>
                             <select name="teacher_id" class="form-select" required>

@@ -12,18 +12,18 @@
 require_once '../../config/config.php';
 
 requireLogin();
-requireRole(['Teacher', 'Super Admin']);
+requireRole(teacherPortalRoles());
 
 $pageTitle = 'Mark Attendance';
 
 // Get current user and teacher record
 $currentUser = getCurrentUser();
-$isSuperAdmin = hasRole(['Super Admin']);
+$isPortalViewer = isPortalAdminViewer();
 
 $teacher = null;
 $teacherId = null;
 
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     // Super Admin can mark attendance for any class
     $teacherId = null;
 } else {
@@ -59,7 +59,7 @@ if (empty($subjectId)) {
 }
 
 // STRICT VERIFICATION: Verify that this class AND subject are assigned to the teacher
-if (!$isSuperAdmin) {
+if (!$isPortalViewer) {
     // Verify via class_subjects
     $verifySql = "SELECT cs.id 
                   FROM class_subjects cs
@@ -134,7 +134,7 @@ $sections = fetchAll(executeQuery($sectionsSql, 'i', [$classId]));
 $sectionFilter = $_GET['section_id'] ?? '';
 
 // STRICT QUERY: Get students ONLY from this class assigned to teacher
-if ($isSuperAdmin) {
+if ($isPortalViewer) {
     // Super Admin can see all students in the class
     $sql = "SELECT s.*, sec.section_name,
             sa.status as attendance_status, sa.remarks, sa.id as attendance_id
