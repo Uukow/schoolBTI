@@ -1,0 +1,76 @@
+# School ERP System - Apache Configuration
+# Simplified for XAMPP Compatibility
+
+# Prevent Directory Browsing
+Options -Indexes
+
+# Enable symbolic links if needed
+# Options +FollowSymLinks
+
+# Default index files
+DirectoryIndex index.php index.html
+
+# Protect sensitive files (Basic protection)
+<Files "config.php">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files "database.php">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files ".env">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files ".env.local">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files ".env.production">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files ".htaccess">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+<Files ".htpasswd">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Protect database files
+<Files "*.sql">
+    Order Allow,Deny
+    Deny from all
+</Files>
+
+# Basic PHP Settings (if allowed by server)
+<IfModule mod_php.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 300
+    php_value memory_limit 256M
+</IfModule>
+
+# Alternate PHP settings format
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+    php_value max_execution_time 300
+    php_value memory_limit 256M
+</IfModule>
+
+# Simple rewrite rules (only if mod_rewrite is enabled)
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /bti/
+</IfModule>
+

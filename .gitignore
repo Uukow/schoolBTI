@@ -1,0 +1,37 @@
+# Environment and configuration files
+.env
+.env.local
+.env.production
+
+# Logs
+logs/*.log
+*.log
+
+# Temporary files
+*.html
+*.tmp
+*.cache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+# zip files
+*.zip
+*.rar
+*.7z
+*.tar
+*.gz
+*.bz2
+*.xz
+*.wim
+*.iso
+# html files
+*.html
+*.htm

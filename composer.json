@@ -1,0 +1,55 @@
+{
+    "name": "schoolerp/school-management-system",
+    "description": "Comprehensive School ERP System with PHP, MySQL, Bootstrap, jQuery, and AJAX",
+    "type": "project",
+    "keywords": [
+        "school",
+        "erp",
+        "education",
+        "management",
+        "student",
+        "attendance",
+        "fees",
+        "library",
+        "php",
+        "mysql",
+        "bootstrap"
+    ],
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "School ERP Development Team",
+            "email": "support@schoolerp.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "ext-gd": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-mysqli": "*",
+        "ext-pdo": "*",
+        "mpdf/mpdf": "^8.2",
+        "phpmailer/phpmailer": "^6.8",
+        "phpoffice/phpspreadsheet": "^1.29"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "SchoolERP\\": "includes/"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "echo 'School ERP System dependencies installed successfully!'",
+            "echo 'Run setup.php to install the system'"
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    }
+}

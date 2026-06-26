@@ -1,0 +1,98 @@
+TacliinHub ERP System - License Agreement
+
+Copyright (c) 2025 Uukow Technology Solutions (UTech)
+All rights reserved.
+
+PROPRIETARY LICENSE
+
+This TacliinHub ERP System ("the Software") is proprietary software developed
+and owned by Uukow Technology Solutions (UTech) for educational institution
+management purposes.
+
+IMPORTANT NOTICE - UNAUTHORIZED USE PROHIBITED:
+
+This Software is protected by copyright laws and international copyright treaties,
+as well as other intellectual property laws and treaties.
+
+THE USE OF THIS SOFTWARE WITHOUT OFFICIAL AUTHORIZATION FROM UUKOW TECHNOLOGY
+SOLUTIONS (UTECH) IS STRICTLY PROHIBITED.
+
+Any unauthorized use, reproduction, distribution, or modification of this
+Software may result in severe civil and criminal penalties, and will be
+prosecuted to the maximum extent possible under law.
+
+GRANT OF LICENSE:
+Permission to use this Software is granted ONLY upon official authorization
+from Uukow Technology Solutions (UTech). Unauthorized use is strictly prohibited.
+
+RESTRICTIONS:
+1. You may NOT use this Software without official authorization
+2. You may NOT redistribute this Software in any form
+3. You may NOT sell or sublicense this Software
+4. You may NOT remove or modify copyright notices
+5. You may NOT claim authorship of this Software
+6. You may NOT reverse engineer, decompile, or disassemble this Software
+7. You may NOT use this Software for any commercial purpose without authorization
+
+PERMITTED USES (Upon Authorization):
+1. Install and use for your school/educational institution
+2. Modify for your specific needs (with authorization)
+3. Deploy to your production environment (with authorization)
+
+NO WARRANTY:
+This Software is provided "AS IS" without warranty of any kind, express or
+implied, including but not limited to the warranties of merchantability,
+fitness for a particular purpose, and non-infringement.
+
+LIMITATION OF LIABILITY:
+In no event shall Uukow Technology Solutions (UTech) or copyright holders be
+liable for any claim, damages, or other liability arising from the use of
+this Software.
+
+LICENSING & PERMISSION REQUESTS:
+
+For licensing, authorization, or permission to use this Software, please contact:
+
+Uukow Technology Solutions (UTech)
+Website: https://uukowtech.com
+Email: info@uukowtech.com
+WhatsApp / Call: +252613888976
+
+All licensing inquiries must be made through the official channels listed above.
+
+---
+
+THIRD-PARTY COMPONENTS:
+This Software includes the following third-party components:
+
+1. Bootstrap 5 - MIT License
+   Copyright (c) 2011-2023 Twitter, Inc.
+   
+2. jQuery - MIT License
+   Copyright OpenJS Foundation and other contributors
+
+3. DataTables - MIT License
+   Copyright (c) 2008-2023 SpryMedia Ltd.
+
+4. ApexCharts - MIT License
+   Copyright (c) 2018 ApexCharts
+
+5. Remix Icons - Apache License 2.0
+   Copyright (c) 2020 Remix Design
+
+6. PHPMailer - LGPL 2.1
+   Copyright (c) 2012-2023 Marcus Bointon
+
+Each third-party component is subject to its own license terms.
+
+---
+
+ACKNOWLEDGMENTS:
+This Software was developed using modern web technologies and best practices
+for educational institution management.
+
+---
+
+Last Updated: December 20, 2025
+Version: 1.0.0
+
